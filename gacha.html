@@ -9,7 +9,7 @@
 
 <script type="text/javascript">
 $(document).ready(function(){
-	$('#files').bind('change', printTable);
+	$('#files').bind('change', loadXMLCsv);
 	$(document).on('click', 'img',
 		function(evt) {
 		    var imgid = $(this).attr("id").substring(7, 10);
@@ -413,7 +413,19 @@ function printTable(evt) {
 		classifyServ (photodata);
 	};
 	reader.onerror = function(){ alert('Unable to read ' + file.fileName); };
+}
 
+function loadXMLCsv(evt){
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      var csv = this.responseText;
+	  photodata = $.csv.toArrays(csv);
+	  classifyServ (photodata);
+    }
+  };
+  xhttp.open("GET", "./allservents.csv", true);
+  xhttp.send();
 }
 </script>
 </head>
