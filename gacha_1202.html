@@ -1,0 +1,402 @@
+﻿<html>
+<head>
+	<!--link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css"-->
+	<script src="http://evanplaice.github.io/jquery-csv/src/jquery.csv.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<!--script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script-->
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#files').bind('change', printTable);
+	$(document).on('click', 'img',
+		function(evt) {
+		    var imgid = $(this).attr("id").substring(7, 10);
+			var imgsrc = $(this).attr("src");
+			var img_html = "<img src='" + imgsrc + "' id='tabserv" + imgid + "' />";
+			var star_html = "<span class='star'>" + photodata[imgid][0] + "</span>";
+			var jpname_html = "<span class='jpname'>" + photodata[imgid][1] + "</span>";
+			var classname_html = "<span class='classname'>[" + photodata[imgid][2] + "]</span>";
+			var chname_html = "<span class='chname'>" + photodata[imgid][3] + "</span>";
+			var nickname1_html = '';
+			var nickname2_html = '';
+			var nickname3_html = '';			
+			if (typeof photodata[imgid][4] != "undefined" && photodata[imgid][4].length!=0) {
+				nickname1_html = "<span class='nickname1'>" + photodata[imgid][4] + "</span>";
+			} else {
+				nickname1_html = "<span class='nickname1'></span>";
+			}
+			if (typeof photodata[imgid][5] != "undefined" && photodata[imgid][5].length!=0) {
+				nickname2_html = "<span class='nickname2'>；" + photodata[imgid][5] + "</span>";
+			} else {
+				nickname2_html = "<span class='nickname2'></span>";
+			}
+			if (typeof photodata[imgid][6] != "undefined" && photodata[imgid][6].length!=0) {
+				nickname3_html = "<span class='nickname3'>；" + photodata[imgid][6] + "</span>";
+			} else {
+				nickname3_html = "<span class='nickname3'></span>";			
+			}
+			questlist = ["特異點F","第一特異點","第二特異點","第三特異點","第四特異點","第五特異點","第六特異點","第七特異點","終局特異點","亞種特異點Ⅰ","亞種特異點Ⅱ","亞種特異點Ⅲ","亞種特異點Ⅳ","對應章節"];
+			questLen = questlist.length;
+			questlist_html = "";
+			for (var i=0;i<questLen;i++) {
+				questlist_html += "<option value='" + i + "'>" + questlist[i] + "</option>";
+			}
+			name_html = star_html + jpname_html + classname_html + "，" + chname_html + "(" + nickname1_html + nickname2_html + nickname3_html + ")";
+			start_datetime_html = "<input type='datetime-local' class='dateEdit' id='start" + imgid +"_0'><span class='space_tilde'>～</span>";
+			end_datetime_html = "<input type='datetime-local' class='dateEdit' id='end" + imgid +"_0'><span class='space_tilde'>  <br></span>";
+			add_date_html = "<button class='btn btn-danger addDate' id='add" + imgid +"'>增加時間</button>";
+			del_date_html = "<button class='btn btn-danger deleteDate'>刪除時間</button>";
+			del_bttn_html = "<button class='btn btn-danger deleteRow'>Delete</button>";
+			chinese_checkbox_html = "<input type='checkbox' name='chinese_chbx' value='ch' />純中文";
+			no_join_checkbox_html = "<input type='checkbox' name='no_join_chbx' value='njn' />之後不會加入卡池";
+			advance_checkbox_html = "<input type='checkbox' name='advance_chbx' value='adv' />尚未通過右列關卡亦可抽 ";
+			advance_dropdown_html = "<select>" + questlist_html + "</select>";
+			$(".show_serv").append('<li>' + del_bttn_html + img_html + name_html +'<br>'
+			  + chinese_checkbox_html + no_join_checkbox_html + advance_checkbox_html + advance_dropdown_html + '<br>' 
+			  + add_date_html + del_date_html + start_datetime_html + end_datetime_html +
+			  '</li>');
+			/*
+			$("#div_table").html(function(i, origText){
+				return origText + "<img src='" + imgsrc + "' id='tabserv" + imgid + "' />" + del_bttn_html +"<br>";
+				
+			});
+			*/
+		}
+	);
+	$(document).on('click', '.deleteRow', function(event){
+        $(this).parent().remove();
+    });
+	
+	$(document).on('click', '.deleteDate', function(event){
+		if ( $(this).next().is( ".dateEdit" ) ) {
+			$(this).next().remove();
+		}
+		if ( $(this).next().is( ".space_tilde" ) ) {
+			$(this).next().remove();
+		}
+		if ( $(this).next().is( ".dateEdit" ) ) {
+			$(this).next().remove();
+		}
+		if ( $(this).next().is( ".space_tilde" ) ) {
+			$(this).next().remove();
+		}
+    });
+	
+	$(document).on('click', '.addDate', function(event){
+	    var addid = $(this).attr("id").substring(3, 6);
+		addcountindex += 1;
+		start_datetime_html = "<input type='datetime-local' class='dateEdit' id='start" + addid +"_" + addcountindex+"'><span class='space_tilde'>～</span>";
+		end_datetime_html = "<input type='datetime-local' class='dateEdit' id='end" + addid +"_" + addcountindex+ "'><span class='space_tilde'>  <br></span>";
+		$(this).parent().append(start_datetime_html + end_datetime_html);
+    });
+	
+	$(document).on('click', '.output', function(event){
+		function byteLength(str) {
+			// returns the byte length of an utf8 string
+			var l = str.length;   
+			var blen = 0;   
+			for(var i=0; i<l; i++) {   
+				if ((str.charCodeAt(i) & 0xff00) != 0) {   
+					blen ++;   
+				}   
+				blen ++;   
+			}  
+			return blen;
+		}
+		function whitesp(string){
+			return string.split(" ").join("&nbsp;");
+		}
+		function red(string){
+			return '\u001b[1;30;31m' + string + '\u001b[m';
+		}
+		function yellow(string){
+			return '\u001b[1;30;33m' + string + '\u001b[m';
+		}
+		function green(string){
+			return '\u001b[1;30;32m' + string + '\u001b[m';
+		}
+		function blue(string){
+			return '\u001b[1;30;36m' + string + '\u001b[m';
+		}
+		function purple(string){
+			return '\u001b[1;30;35m' + string + '\u001b[m';
+		}
+		function autoSeparateLine (string, prefixLength, maxByteLength) {
+			if (byteLength(string) <= maxByteLength) {
+				var RetStr = [string];
+				return RetStr;
+			} else {
+				var minLen = Math.floor((maxByteLength - prefixLength)/2);
+				var temp = ".{1,"+minLen+"}";
+				var re = new RegExp(temp, 'g');
+				var RetStr = string.match(re);
+				for (var i=0;i<RetStr.length; i++){
+					if (i==0) {
+						continue;
+					}
+					RetStr[i] = whitesp(' ').repeat(prefixLength) + RetStr[i];
+				}
+				return RetStr;
+			} 
+		}
+		
+		
+		var GMTOn = false;
+		var joinWarningNames = [];
+		var joinWarningStr = "";
+		var advJoinNames = [];
+		var hasAdvJoinNames = [];
+		var advJoinStr = "";
+		var noteNum = 0;
+		var noteIndex = 1;
+		for (var i=0;i<questLen;i++) {
+			advJoinNames[i] = [];
+			hasAdvJoinNames[i] = false;
+		}
+		$(".show_ansi").html('');
+		$( "li" ).each(function( index ) {
+			//*
+			//* processing jp and ch name
+			//*
+		    var star = $( this).children('span:nth(0)').text();
+			var jpname = $( this).children('span:nth(1)').text();
+			var classname = $( this).children('span:nth(2)').text();
+			var chname = $( this).children('span:nth(3)').text();
+			var nickname1 = $( this).children('span:nth(4)').text();
+			var nickname2 = $( this).children('span:nth(5)').text();
+			var nickname3 = $( this).children('span:nth(6)').text();
+			var fullname = "";
+			var nickname = "";
+			var color_fullname = '';
+			var dateTimeStr = '';
+			var color_dateTimeStr = '';
+			var isAdvJoin = $(this).children('input[type="checkbox"][name="advance_chbx"]:checked').length > 0;
+			var chnameOnly = $(this).children('input[type="checkbox"][name="chinese_chbx"]:checked').length > 0;
+			switch (star){
+				case "☆":
+					star = "        ☆";
+					star += " UN  ";
+					color_fullname = star + (chnameOnly?chname:jpname) + classname;
+					break;
+				case "☆☆":
+					star = "      ☆☆";
+					star += "  N  ";
+					color_fullname = star + (chnameOnly?chname:jpname) + classname;
+					break;
+				case "☆☆☆":
+					star = "    ☆☆☆";
+					star += "  R  "
+					color_fullname = green(star + (chnameOnly?chname:jpname) + classname);
+					break;
+				case "☆☆☆☆":
+					star = "  ☆☆☆☆";
+					star += " SR  "
+					color_fullname = yellow(star + (chnameOnly?chname:jpname) + classname);
+					break;
+				case "☆☆☆☆☆":
+					star += "SSR  "
+					color_fullname = red(star + (chnameOnly?chname:jpname) + classname) ;
+					break;
+				default:
+					break;
+			}
+			//
+			// processing chinese and japanese name
+			//	
+			if (chnameOnly == true) {
+				fullname = star + chname + classname;
+				var name_len = byteLength(fullname);
+				var space_len = 47 - name_len;
+				if (space_len>=0){
+					spaceseparator = whitesp(' ').repeat(space_len);
+				} else {
+					spaceseparator = '<br>'+whitesp(' ').repeat(47);
+				}
+				var len_max = 31;
+				if (nickname1.length > 0 && byteLength(nickname1) < (31-2)){
+					nickname = nickname1;
+					if (nickname2.length > 0 && byteLength(nickname1) + byteLength(nickname2)< (31-2-2)){
+						nickname += nickname2;
+						if (nickname3.length > 0&& byteLength(nickname1) + byteLength(nickname2) + byteLength(nickname3)< (31-2-2-2)){
+							nickname += nickname3;
+						}
+					}
+				}
+			} else {
+				fullname = star + jpname + classname;
+				var name_len = byteLength(fullname);
+				var space_len = 47 - name_len;
+				if (space_len>=0){
+					spaceseparator = whitesp(' ').repeat(space_len);
+				} else {
+					spaceseparator = '<br>'+whitesp(' ').repeat(47);
+				}
+				var len_max = 31;
+				if (nickname1.length > 0 && byteLength(chname) + byteLength(nickname1) < (31-2)){
+					nickname = "；" + nickname1;
+					if (nickname2.length > 0 && byteLength(chname) + byteLength(nickname1) + byteLength(nickname2)< (31-2-2)){
+						nickname += nickname2;
+						if (nickname3.length > 0&& byteLength(chname) + byteLength(nickname1) + byteLength(nickname2) + byteLength(nickname3)< (31-2-2-2)){
+							nickname += nickname3;
+						}
+					}
+				}
+			}
+			//
+			// processing advanced joining
+			//
+			if (isAdvJoin == true) {
+				var selectedOptVal = parseInt( $(this).children('select').val());
+				advJoinNames[selectedOptVal].push(chname+classname);
+				hasAdvJoinNames[selectedOptVal] = true;
+				noteNum++;
+			}
+			//*
+			//* processing date and time
+			//*
+			var alldates = $(this).children('input[type="datetime-local"]');
+			var dateInputLength = alldates.length;
+			for (var i=0; i<dateInputLength; i+=2){
+				dateTimeStr = '';
+				var newStartDateValue = alldates[i].value;
+				var newStartTimeValue = alldates[i].value.substring(11, 16);
+				newStartDateValue = $.datepicker.formatDate('yy/mm/dd  ', new Date( newStartDateValue) );
+				if (newStartDateValue == 'NaN/NaN/NaN  ') {
+					newStartDateValue = $.datepicker.formatDate('yy/mm/dd  ', new Date() );
+					newStartTimeValue = "23:00";
+				}
+				var newEndDateValue = alldates[i+1].value;
+				var newEndTimeValue = alldates[i+1].value.substring(11, 16);
+				newEndDateValue = $.datepicker.formatDate('yy/mm/dd  ', new Date( newEndDateValue) );
+				if (newEndDateValue == 'NaN/NaN/NaN  ') {
+					newEndDateValue = $.datepicker.formatDate('yy/mm/dd  ', new Date() );
+					newEndTimeValue = "22:59";
+				}
+				var notJoining = $(this).children('input[type="checkbox"][name="no_join_chbx"]:checked').length > 0;
+				if (notJoining == true && i==0) {
+					dateTimeStr = "限定期間：";
+					joinWarningNames.push(chname + classname);
+				} else if (i==0){
+					dateTimeStr += "ＰＵ期間：";			
+				} else {
+					dateTimeStr += whitesp(' ').repeat(10);
+				}
+				dateTimeStr += newStartDateValue + newStartTimeValue + " ~ "+ newEndDateValue+newEndTimeValue;
+				if (GMTOn == false) {
+					dateTimeStr += "(GMT+8，下同)";
+					GMTOn = true;
+				}
+				color_dateTimeStr += blue(dateTimeStr) + '<br>';
+			}
+			$(".show_ansi").append(whitesp(color_fullname)+spaceseparator+'('+(chnameOnly?'':chname)+nickname+')<br>' + color_dateTimeStr);
+		});
+		$(".show_ansi").append("<br>");
+		if (joinWarningNames.length > 0){
+			if (noteNum == 0) {
+				joinWarningStr += "註：";
+			} else {
+				joinWarningStr += "註1.：";
+			}
+			for (i=0;i<joinWarningNames.length;i++){
+				if (i==joinWarningNames.length-1 && joinWarningNames.length!=1){
+					joinWarningStr += "以及";
+				} else if (i!=0){
+					joinWarningStr += "、";
+				}
+				joinWarningStr += joinWarningNames[i];
+			}
+			var separateStrs = autoSeparateLine (joinWarningStr, 4 + (noteNum==0 ? 0 : 2), 78);
+			if (separateStrs.length==1){
+				joinWarningStr += "於本次限定卡池期間結束後"
+				joinWarningStr = purple(joinWarningStr);
+				$(".show_ansi").append(joinWarningStr+"<br>");
+			} else {
+				for (var i=0;i<separateStrs.length;i++){
+					separateStrs[i] = purple(separateStrs[i]);
+					$(".show_ansi").append(separateStrs[i]+ "<br>");
+				}
+				joinWarningStr = whitesp(' ').repeat(4);
+				joinWarningStr += "於本次限定卡池期間結束後"
+				joinWarningStr = purple(joinWarningStr);
+				$(".show_ansi").append(joinWarningStr+"<br>");
+			}						
+			joinWarningStr = whitesp(' ').repeat(4);
+			joinWarningStr += "將不會加入一般卡池和其他限定卡池中";
+			joinWarningStr = purple(joinWarningStr);
+			$(".show_ansi").append(joinWarningStr+"<br><br>");
+		}
+		for (var i=0;i<hasAdvJoinNames.length;i++) {
+			if (hasAdvJoinNames[i] == true){
+				if (joinWarningNames.length == 0) {
+					advJoinStr = "註：";
+				} else {
+					advJoinStr = "註" + (++noteIndex) + ".：";
+				}
+				advJoinStr += "即使尚未通過";
+				advJoinStr += questlist[i];
+				$(".show_ansi").append( purple(advJoinStr) );
+				$(".show_ansi").append("<br>" );
+				var advJoinNameStr = whitesp(' ').repeat(4 + (noteNum==0 ? 0 : 2)) + "依然可以抽到";
+				for (var j=0;j<advJoinNames[i].length;j++){
+					if (j==advJoinNames[i].length-1 && advJoinNames[i].length!=1){
+						advJoinNameStr += "以及";
+					} else if (j!=0){
+						advJoinNameStr += "、";
+					}
+					advJoinNameStr += advJoinNames[i][j];		
+				}
+				var advJoinNameStrLine = autoSeparateLine (advJoinNameStr, 4 + (noteNum==0 ? 0 : 2), 126);
+				for (var j=0;j<advJoinNameStrLine.length;j++){
+					advJoinNameStrLine[j] = purple(advJoinNameStrLine[j]);
+					$(".show_ansi").append(advJoinNameStrLine[j]+ "<br>");
+				}
+			}
+		}
+	});
+	
+});
+function printTable(evt) {
+	var files = evt.target.files; // FileList object
+	var file = files[0];
+	var reader = new FileReader();
+	reader.readAsText(file);
+	reader.onload = function(event){
+		var csv = event.target.result;
+		photodata = $.csv.toArrays(csv);
+	};
+	reader.onerror = function(){ alert('Unable to read ' + file.fileName); };
+}
+</script>
+</head>
+<body>
+
+ <input type="file" id="files" name="files[]" multiple />
+<div id='div_img'>
+
+</div>
+<button class='btn btn-danger output'>輸出成ANSI</button>
+<div id='ANSI' class="show_ansi">
+</div>
+<div id='div_table'>
+<ul style="margin-top:5px;margin-bottom:5px;" class="show_serv">
+</ul>
+</div>
+<script>
+
+	function pad (str, max) {
+	  str = str.toString();
+	  return str.length < max ? pad("0" + str, max) : str;
+	}
+	addcountindex = 0;
+	var total_pet = 128;
+	var htmls = "";
+	for (i=1; i<total_pet;i++){
+		htmls += "<img src='http://fate-go.cirnopedia.org/icons/servant/servant_" + pad(i, 3) + "1.png' id='imgserv" + i + "'></img>";
+		if(i%20==0){
+			htmls += '<br>';
+		}
+	}
+	document.getElementById("div_img").innerHTML = htmls;
+
+</script>
+</body>
+</html>

@@ -1,0 +1,180 @@
+﻿<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="http://evanplaice.github.io/jquery-csv/src/jquery.csv.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#files').bind('change', printTable);
+	$(document).on('click', 'img',
+		function(evt) {
+		    imgid = $(this).attr("id").substring(7, 10);
+			imgsrc = $(this).attr("src");
+			img_html = "<img src='" + imgsrc + "' id='tabserv" + imgid + "' />";
+			star_html = "<span class='star'>" + data[imgid][0] + "</span>";
+			jpname_html = "<span class='jpname'>" + data[imgid][1] + "</span>";
+			classname_html = "<span class='classname'>[" + data[imgid][2] + "]</span>";
+			chname_html = "<span class='chname'>" + data[imgid][3] + "</span>";
+			name_html = star_html + jpname_html + classname_html + chname_html;
+			start_datetime_html = "<input type='datetime-local' class='dateEdit' id='start" + imgid +"'><span class='space_tilde'>～</span>";
+			end_datetime_html = "<input type='datetime-local' class='dateEdit' id='end" + imgid +"'><span class='space_tilde'>&nbsp;&nbsp;</span>";
+			add_date_html = "<button class='btn btn-danger addDate'>增加時間</button>";
+			del_date_html = "<button class='btn btn-danger deleteDate'>刪除時間</button>";
+			del_bttn_html = "<button class='btn btn-danger deleteRow'>Delete</button>";
+			chinese_checkbox_html = "<input type='checkbox' name='chinese_chbx' value='ch' />純中文";
+			no_join_checkbox_html = "<input type='checkbox' name='no_join_chbx' value='njn' />之後不會加入卡池";
+			$(".show_serv").append('<li>' + del_bttn_html + img_html + name_html +'<br>'
+			  + chinese_checkbox_html + no_join_checkbox_html + '<br>' 
+			  + add_date_html + del_date_html + start_datetime_html + end_datetime_html +
+			  '</li>');
+			/*
+			$("#div_table").html(function(i, origText){
+				return origText + "<img src='" + imgsrc + "' id='tabserv" + imgid + "' />" + del_bttn_html +"<br>";
+				
+			});
+			*/
+		}
+	);
+	$(document).on('click', '.deleteRow', function(event){
+        $(this).parent().remove();
+    });
+	
+	$(document).on('click', '.deleteDate', function(event){
+		if ( $(this).next().is( ".dateEdit" ) ) {
+			$(this).next().remove();
+		}
+		if ( $(this).next().is( ".space_tilde" ) ) {
+			$(this).next().remove();
+		}
+		if ( $(this).next().is( ".dateEdit" ) ) {
+			$(this).next().remove();
+		}
+		if ( $(this).next().is( ".space_tilde" ) ) {
+			$(this).next().remove();
+		}
+    });
+	
+	$(document).on('click', '.addDate', function(event){
+		start_datetime_html = "<input type='datetime-local' class='dateEdit' id='start" + imgid +"'><span class='space_tilde'>～</span>";
+		end_datetime_html = "<input type='datetime-local' class='dateEdit' id='end" + imgid +"'><span class='space_tilde'>&nbsp;&nbsp;</span>";
+		$(this).parent().append(start_datetime_html + end_datetime_html);
+    });
+	
+	$(document).on('click', '.output', function(event){
+		function byteLength(str) {
+		  // returns the byte length of an utf8 string
+		  var s = str.length;
+		  for (var i=str.length-1; i>=0; i--) {
+			var code = str.charCodeAt(i);
+			if (code > 0x7f && code <= 0x7ff) s++;
+			else if (code > 0x7ff && code <= 0xffff) s+=2;
+			if (code >= 0xDC00 && code <= 0xDFFF) i--; //trail surrogate
+		  }
+		  return s;
+		}
+		function whitesp(string){
+			return string.split(" ").join("&nbsp;");
+		}
+		function red(string){
+			return '\u001b[1;30;31m' + string + '\u001b[m';
+		}
+		function yellow(string){
+			return '\u001b[1;30;33m' + string + '\u001b[m';
+		}
+		function green(string){
+			return '\u001b[1;30;32m' + string + '\u001b[m';
+		}
+		function blue(string){
+			return '\u001b[1;30;36m' + string + '\u001b[m';
+		}
+		function purple(string){
+			return '\u001b[1;30;35m' + string + '\u001b[m';
+		}
+		$(".show_ansi").html('');
+		$( "li" ).each(function( index ) {
+			//*
+			//* processing jp and ch name
+			//*
+		    star = $( this).children('span:nth(0)').text();
+			jpname = $( this).children('span:nth(1)').text();
+			classname = $( this).children('span:nth(2)').text();
+			fullname = "";
+			color_fullname = '';
+			switch (star){
+				case "☆":
+					star = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;☆";
+					star += "&nbsp;UN&nbsp;&nbsp;";
+					color_fullname = star + jpname + classname;
+					break;
+				case "☆☆":
+					star = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;☆☆";
+					star += "&nbsp;&nbsp;N&nbsp;&nbsp;";
+					color_fullname = star + jpname + classname;
+					break;
+				case "☆☆☆":
+					star = "&nbsp;&nbsp;&nbsp;&nbsp;☆☆☆";
+					star += "&nbsp;&nbsp;R&nbsp;&nbsp;"
+					color_fullname = green(star + jpname + classname);
+					break;
+				case "☆☆☆☆":
+					star = "&nbsp;&nbsp;☆☆☆☆";
+					star += "&nbsp;SR&nbsp;&nbsp;"
+					color_fullname = yellow(star + jpname + classname);
+					break;
+				case "☆☆☆☆☆":
+					star += "SSR&nbsp;&nbsp;"
+					color_fullname = red(star + jpname + classname) ;
+					break;
+				default:
+					break;
+			}
+			fullname = star + jpname + classname;
+			$(".show_ansi").append(color_fullname+'<br>'+byteLength(''));
+		});
+		
+	});
+	
+});
+function printTable(evt) {
+	var files = evt.target.files; // FileList object
+	var file = files[0];
+	var reader = new FileReader();
+	reader.readAsText(file);
+	reader.onload = function(event){
+		var csv = event.target.result;
+		data = $.csv.toArrays(csv);
+	};
+	reader.onerror = function(){ alert('Unable to read ' + file.fileName); };
+}
+</script>
+</head>
+<body>
+ <input type="file" id="files" name="files[]" multiple />
+<div id='div_img'>
+
+</div>
+<button class='btn btn-danger output'>輸出成ANSI</button>
+<div id='ANSI' class="show_ansi">
+</div>
+<div id='div_table'>
+<ul style="margin-top:5px;margin-bottom:5px;" class="show_serv">
+</ul>
+</div>
+<script>
+
+	function pad (str, max) {
+	  str = str.toString();
+	  return str.length < max ? pad("0" + str, max) : str;
+	}
+	var total_pet = 192;
+	var htmls = "";
+	for (i=1; i<total_pet;i++){
+		htmls += "<img src='http://fate-go.cirnopedia.org/icons/servant/servant_" + pad(i, 3) + "1.png' id='imgserv" + i + "'></img>";
+		if(i%20==0){
+			htmls += '<br>';
+		}
+	}
+	document.getElementById("div_img").innerHTML = htmls;
+
+</script>
+</body>
+</html>
