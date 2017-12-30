@@ -478,7 +478,8 @@ function loadXMLCsv(evt){
 </div> 
 
  <button type="button" onclick="loadXMLCsv()">載入線上資料</button>
- <input type="file" id="files" name="files[]" multiple />
+ <label for="files" class="btn">載入自訂資料，限用csv檔</label>
+ <input type="file" id="files" name="files[]" style="visibility:hidden;" multiple />
 
 <button class='btn btn-danger output'>輸出成ANSI</button>
 <div id='ANSI' class="show_ansi">
