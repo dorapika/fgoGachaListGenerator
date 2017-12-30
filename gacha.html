@@ -9,7 +9,7 @@
 
 <script type="text/javascript">
 $(document).ready(function(){
-	//$('#files').bind('change', printTable);
+	$('#files').bind('change', printTable);
 	$(document).on('click', 'img',
 		function(evt) {
 		    var imgid = $(this).attr("id").substring(7, 10);
@@ -477,8 +477,8 @@ function loadXMLCsv(evt){
 	   data-slide="next">&rsaquo;</a>
 </div> 
 
- <button type="button" onclick="loadXMLCsv()">載入資料</button>
- <!--input type="file" id="files" name="files[]" multiple /-->
+ <button type="button" onclick="loadXMLCsv()">載入線上資料</button>
+ <input type="file" id="files" name="files[]" multiple>Hello</input>
 
 <button class='btn btn-danger output'>輸出成ANSI</button>
 <div id='ANSI' class="show_ansi">
