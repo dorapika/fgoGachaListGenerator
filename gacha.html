@@ -4,6 +4,7 @@
 <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
 <script src="http://evanplaice.github.io/jquery-csv/src/jquery.csv.js"></script>
 <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="date.format.js"></script>
 <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">
 <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
@@ -262,15 +263,26 @@ $(document).ready(function(){
 			var dateInputLength = alldates.length;
 			for (var i=0; i<dateInputLength; i+=2){
 				dateTimeStr = '';
-				var newStartDateValue = alldates[i].value;
-				var newStartTimeValue = alldates[i].value.substring(11, 16);
+				var tempStartValue = new Date(alldates[i].value);
+				var tempEndValue = new Date(alldates[i+1].value);
+				if (chnameOnly == false) {
+					//
+					//time zone is japan
+					//
+					tempStartValue.setHours(tempStartValue.getHours() - 1);
+					tempEndValue.setHours(tempEndValue.getHours() - 1);
+				}
+				tempStartValue = tempStartValue.format("isoDateTime");
+				tempEndValue = tempEndValue.format("isoDateTime");
+				var newStartDateValue = tempStartValue;
+				var newStartTimeValue = tempStartValue.substring(11, 16);
 				newStartDateValue = $.datepicker.formatDate('yy/mm/dd  ', new Date( newStartDateValue) );
 				if (newStartDateValue == 'NaN/NaN/NaN  ') {
 					newStartDateValue = $.datepicker.formatDate('yy/mm/dd  ', new Date() );
 					newStartTimeValue = "23:00";
 				}
-				var newEndDateValue = alldates[i+1].value;
-				var newEndTimeValue = alldates[i+1].value.substring(11, 16);
+				var newEndDateValue = tempEndValue;
+				var newEndTimeValue = tempEndValue.substring(11, 16);
 				newEndDateValue = $.datepicker.formatDate('yy/mm/dd  ', new Date( newEndDateValue) );
 				if (newEndDateValue == 'NaN/NaN/NaN  ') {
 					newEndDateValue = $.datepicker.formatDate('yy/mm/dd  ', new Date() );
