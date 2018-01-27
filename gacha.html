@@ -208,18 +208,19 @@ $(document).ready(function(){
 			if (chnameOnly == true) {
 				fullname = star + chname + classname;
 				var name_len = byteLength(fullname);
-				var space_len = 47 - name_len;
+				var pre_white_len = 45;
+				var space_len = pre_white_len - name_len;
 				if (space_len>=0){
 					spaceseparator = whitesp(' ').repeat(space_len);
 				} else {
-					spaceseparator = '<br>'+whitesp(' ').repeat(47);
+					spaceseparator = '<br>'+whitesp(' ').repeat(pre_white_len);
 				}
-				var len_max = 31;
-				if (nickname1.length > 0 && byteLength(nickname1) < (31-2)){
+				var len_max = 33;
+				if (nickname1.length > 0 && byteLength(nickname1) < (len_max-2)){
 					nickname = nickname1;
-					if (nickname2.length > 0 && byteLength(nickname1) + byteLength(nickname2)< (31-2-2)){
+					if (nickname2.length > 0 && byteLength(nickname1) + byteLength(nickname2)< (len_max-2-2)){
 						nickname += nickname2;
-						if (nickname3.length > 0&& byteLength(nickname1) + byteLength(nickname2) + byteLength(nickname3)< (31-2-2-2)){
+						if (nickname3.length > 0&& byteLength(nickname1) + byteLength(nickname2) + byteLength(nickname3)< (len_max-2-2-2)){
 							nickname += nickname3;
 						}
 					}
@@ -227,18 +228,19 @@ $(document).ready(function(){
 			} else {
 				fullname = star + jpname + classname;
 				var name_len = byteLength(fullname);
-				var space_len = 47 - name_len;
+				var pre_white_len = 45;
+				var space_len = pre_white_len - name_len;
 				if (space_len>=0){
 					spaceseparator = whitesp(' ').repeat(space_len);
 				} else {
-					spaceseparator = '<br>'+whitesp(' ').repeat(47);
+					spaceseparator = '<br>'+whitesp(' ').repeat(pre_white_len);
 				}
-				var len_max = 31;
-				if (nickname1.length > 0 && byteLength(chname) + byteLength(nickname1) < (31-2)){
+				var len_max = 33;
+				if (nickname1.length > 0 && byteLength(chname) + byteLength(nickname1) < (len_max-2)){
 					nickname = "；" + nickname1;
-					if (nickname2.length > 0 && byteLength(chname) + byteLength(nickname1) + byteLength(nickname2)< (31-2-2)){
+					if (nickname2.length > 0 && byteLength(chname) + byteLength(nickname1) + byteLength(nickname2)< (len_max-2-2)){
 						nickname += nickname2;
-						if (nickname3.length > 0&& byteLength(chname) + byteLength(nickname1) + byteLength(nickname2) + byteLength(nickname3)< (31-2-2-2)){
+						if (nickname3.length > 0&& byteLength(chname) + byteLength(nickname1) + byteLength(nickname2) + byteLength(nickname3)< (len_max-2-2-2)){
 							nickname += nickname3;
 						}
 					}
