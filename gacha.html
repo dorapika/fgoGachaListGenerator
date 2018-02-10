@@ -313,7 +313,7 @@ $(document).ready(function(){
 				}
 				color_dateTimeStr += blue(dateTimeStr) + '<br>';
 			}
-			hideNames(nickname);
+			nickname = hideNames(nickname);
 			$(".show_ansi").append(whitesp(color_fullname)+spaceseparator+'('+(chnameOnly?'':chname)+nickname+')<br>' + color_dateTimeStr);
 		});
 		$(".show_ansi").append("<br>");
