@@ -11,6 +11,7 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	$('#files').bind('change', printTable);
+	$('#files_hidden').bind('change', printTableHidden);
 	$(document).on('click', 'img',
 		function(evt) {
 		    var imgid = $(this).attr("id").substring(7, 10);
@@ -128,6 +129,9 @@ $(document).ready(function(){
 			return '\u001b[1;0;30m' + string + '\u001b[m';
 		}
 		function hideNames(string){
+			if (typeof hiddenNames === 'undefined') {
+				return string;
+			}
 			for(var i=0;i<hiddenNames.length;i++){
 				string = string.replace(hiddenNames[i],black(hiddenNames[i]));
 			}
@@ -439,6 +443,19 @@ function printTable(evt) {
 	reader.onerror = function(){ alert('Unable to read ' + file.fileName); };
 }
 
+function printTableHidden(evt) {
+	var files = evt.target.files; // FileList object
+	var file = files[0];
+	var reader = new FileReader();
+	reader.readAsText(file);
+	reader.onload = function(event){
+		var csv = event.target.result;
+		hiddenNames = $.csv.toArrays(csv);
+		console.log(hiddenNames);
+	};
+	reader.onerror = function(){ alert('Unable to read ' + file.fileName); };
+}
+
 function loadXMLCsv(evt){
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
@@ -516,7 +533,9 @@ function loadXMLCsvHidden(evt){
  <button type="button" class="btn btn-danger output" onclick="loadXMLCsvHidden()">載入真名隱藏</button>
  <label for="files" class="btn btn-danger output">載入自訂資料，限用csv檔</label>
  <input type="file" id="files" name="files[]" style="visibility:hidden;" multiple />
-
+ <label for="files_hidden" class="btn btn-danger output">載入自訂真名隱藏，限用csv檔</label>
+ <input type="file" id="files_hidden" name="files_hidden[]" style="visibility:hidden;" multiple />
+ 
 <button class='btn btn-danger output'>輸出成ANSI</button>
 <div id='ANSI' class="show_ansi">
 </div>
