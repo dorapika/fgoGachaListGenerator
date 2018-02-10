@@ -124,6 +124,15 @@ $(document).ready(function(){
 		function purple(string){
 			return '\u001b[1;30;35m' + string + '\u001b[m';
 		}
+		function black(string){
+			return '\u001b[1;0;30m' + string + '\u001b[m';
+		}
+		function hideNames(string){
+			for(var i=0;i<hiddenNames.length;i++){
+				string = string.replace(hiddenNames[i],black(hiddenNames[i]));
+			}
+			return string;
+		}
 		function autoSeparateLine (string, prefixLength, maxByteLength) {
 			if (byteLength(string) <= maxByteLength) {
 				var RetStr = [string];
@@ -304,6 +313,7 @@ $(document).ready(function(){
 				}
 				color_dateTimeStr += blue(dateTimeStr) + '<br>';
 			}
+			hideNames(nickname);
 			$(".show_ansi").append(whitesp(color_fullname)+spaceseparator+'('+(chnameOnly?'':chname)+nickname+')<br>' + color_dateTimeStr);
 		});
 		$(".show_ansi").append("<br>");
@@ -441,6 +451,17 @@ function loadXMLCsv(evt){
   xhttp.open("GET", "./allservents.csv", true);
   xhttp.send();
 }
+function loadXMLCsvHidden(evt){
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      var csv = this.responseText;
+	  hiddenNames = $.csv.toArrays(csv);
+    }
+  };
+  xhttp.open("GET", "./hidden.csv", true);
+  xhttp.send();
+}
 </script>
 </head>
 <body>
@@ -492,6 +513,7 @@ function loadXMLCsv(evt){
 </div> 
 
  <button type="button" class="btn btn-danger output" onclick="loadXMLCsv()">載入線上資料</button>
+ <button type="button" class="btn btn-danger output" onclick="loadXMLCsvHidden()">載入真名隱藏</button>
  <label for="files" class="btn btn-danger output">載入自訂資料，限用csv檔</label>
  <input type="file" id="files" name="files[]" style="visibility:hidden;" multiple />
 
