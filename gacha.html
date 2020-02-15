@@ -9,6 +9,8 @@
 <script src="https://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 <script type="text/javascript">
+questlist = ["特異點F","第一特異點","第二特異點","第三特異點","第四特異點","第五特異點","第六特異點","第七特異點","終局特異點","亞種特異點Ⅰ","亞種特異點Ⅱ","亞種特異點Ⅲ","亞種特異點Ⅳ","對應章節"];
+questLen = questlist.length;
 $(document).ready(function(){
 	$('#files').bind('change', printTable);
 	$('#files_hidden').bind('change', printTableHidden);
@@ -39,8 +41,6 @@ $(document).ready(function(){
 			} else {
 				nickname3_html = "<span class='nickname3'></span>";			
 			}
-			questlist = ["特異點F","第一特異點","第二特異點","第三特異點","第四特異點","第五特異點","第六特異點","第七特異點","終局特異點","亞種特異點Ⅰ","亞種特異點Ⅱ","亞種特異點Ⅲ","亞種特異點Ⅳ","對應章節"];
-			questLen = questlist.length;
 			questlist_html = "";
 			for (var i=0;i<questLen;i++) {
 				questlist_html += "<option value='" + i + "'>" + questlist[i] + "</option>";
